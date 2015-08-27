@@ -12,7 +12,12 @@
 'LIKE'                 return 'LIKE'
 'ORDER'                return 'ORDER'
 'BY'                   return 'BY'
-'WHERE'                return 'WHERE' 
+'WHERE'                return 'WHERE'
+'AND'                  return 'AND'
+'OR'                   return 'OR'
+'NOT'                  return 'NOT'
+'('                    return '('
+')'                    return ')'
 'LIKE'                 return 'LIKE'
 [a-zA-Z_][a-zA-Z0-9_]* return 'NAME'
 [0-9]+(\.[0-9]+)?      return 'NUM'
@@ -23,12 +28,14 @@
 
 /lex
 
-
-%left '+' '-' 
-%left '*' '/' 
-%left '^' 
-%right '!' 
-%right '%' 
+%left 'OR'
+%left 'AND'
+%left 'NOT'
+%left '+' '-'
+%left '*' '/'
+%left '^'
+%right '!'
+%right '%'
 %left UMINUS
 
 %start sql
@@ -72,7 +79,15 @@ where_clause
     ;
 
 search_condition
-    : predicate
+    : search_condition OR search_condition
+      { $$ = { type: 'or', condition: $1, condition_another: $3}; }
+    | search_condition AND search_condition
+      { $$ = { type: 'and', condition: $1, condition_another: $3}; }
+    | NOT search_condition
+      { $$ = { type: 'not', condition: $2}; }
+    | '(' search_condition ')'
+      { $$ = $2; }
+    | predicate
     ;
 
 predicate

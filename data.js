@@ -9,19 +9,42 @@ function print(selection, filter) {
 }
 
 
-function like(predicate) {
-  return function(people) {
-    return people[predicate[0]].match(new RegExp(predicate[1]));
-  };
+function condition2Filter(cond) {
+  if (cond.type.toUpperCase() === 'LIKE') {
+    return function(people) {
+      return people[cond.predicate[0]].match(new RegExp(cond.predicate[1]));
+    };
+  }
+
+  if (cond.type.toUpperCase() === 'OR') {
+    return function(people) {
+      return condition2Filter(cond.condition)(people) || condition2Filter(cond.condition_another)(people);
+    };
+  }
+
+  if (cond.type.toUpperCase() === 'AND') {
+    return function(people) {
+      return condition2Filter(cond.condition)(people) && condition2Filter(cond.condition_another)(people);
+    };
+  }
+
+  if (cond.type.toUpperCase() === 'NOT') {
+    return function(people) {
+      return !condition2Filter(cond.condition)(people);
+    };
+  }
 }
 
+
 function select(ast) {
-  if (ast.clause.where === null) {
+  var _where = ast.clause.where;
+  if (_where === null) {
     print(ast.select, null);
     return ;
   }
 
-  print(ast.selection, like(ast.clause.where.predicate));
+  var filterFunc = condition2Filter(_where);
+  print(ast.selection, filterFunc);
 }
 
 function dml(ast) {

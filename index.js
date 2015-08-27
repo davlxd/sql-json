@@ -10,7 +10,11 @@ var rl = readline.createInterface({
 
 rl.on('line', function (l) {
   var ast = sqlparser.parse(l);
-  console.log(ast);
+
+  console.log('AST:');
+  console.log(require('util').inspect(ast, false, null, true));
+  console.log('\n');
+
   data.dml(ast);
   
   rl.prompt();
