@@ -1,0 +1,29 @@
+{
+  "name": "sql-json",
+  "version": "1.1.0",
+  "description": "A Command Line tool reading JSON file by SQL",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lxdcn/sql-json.git"
+  },
+  "keywords": [
+    "JSON",
+    "SQL"
+  ],
+  "author": "lxd <i@lxd.me>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lxdcn/sql-json/issues"
+  },
+  "homepage": "https://github.com/lxdcn/sql-json",
+  "devDependencies": {
+    "chai": "^2.0.0",
+    "rewire": "^2.3.1",
+    "sinon": "^1.14.1",
+    "underscore": "^1.7.0"
+  }
+}
