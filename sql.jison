@@ -18,6 +18,7 @@
 [0-9]+(\.[0-9]+)?      return 'NUM'
 \'[^'\n]*\'            return 'STRING'
 \"[^'\n]*\"            return 'STRING'
+';'                    return ';'
 <<EOF>>                return 'EOF'
 
 /lex
@@ -36,6 +37,8 @@
 
 sql
     : manipulative_statement EOF
+      { return $1; }
+    | manipulative_statement ';' EOF
       { return $1; }
     ;
 
@@ -96,6 +99,7 @@ atom
 
 literal
     : STRING
+      { $$ = $1.replace(/^\'|\'$/g, '').replace(/^\"|\"$/g, ''); }
     | NUM
     ;
 
