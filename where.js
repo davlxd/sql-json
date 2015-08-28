@@ -41,6 +41,20 @@ function likeCond(cond) {
 }
 
 
+function testNullCond(cond) {
+  return function(people) {
+    if (cond.predicate[0] === 'NOT') {
+      var field = people[cond.predicate[1]];
+      return typeof field === 'undefined' || field === null ? false : true;
+
+    } else {
+      var field = people[cond.predicate[0]];
+      return typeof field === 'undefined' || field === null ? true : false;
+    }
+  };
+}
+
+
 function condition2Filter(cond) {
   if (cond.type === 'COMPARISON') {
     return comparisonCond(cond);
@@ -48,6 +62,10 @@ function condition2Filter(cond) {
 
   if (cond.type === 'LIKE') {
     return likeCond(cond);
+  }
+
+  if (cond.type === 'TEST_NULL') {
+    return testNullCond(cond);
   }
 
   if (cond.type === 'OR') {

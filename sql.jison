@@ -23,6 +23,8 @@
 'UPDATE'               return 'UPDATE'
 'SET'                  return 'SET'
 'NULL'                 return 'NULLX'
+'IS'                   return 'IS'
+'NOT'                  return 'NOT'
 '('                    return '('
 ')'                    return ')'
 '>='                   return 'COMPARISON'
@@ -113,6 +115,8 @@ predicate
       { $$ = { type: 'BETWEEN', predicate: $1}; }
     | like_predicate
       { $$ = { type: 'LIKE', predicate: $1}; }
+    | test_for_null
+      { $$ = { type: 'TEST_NULL', predicate: $1}; }
     ;
 
 comparison_predicate
@@ -124,12 +128,19 @@ between_predicate
     : scalar_exp NOT BETWEEN scalar_exp AND scalar_exp
       { $$ = [$1, $4, $6]; }
     | scalar_exp BETWEEN scalar_exp AND scalar_exp
-      { $$ = ['not', $1, $3, $5]; }
+      { $$ = ['NOT', $1, $3, $5]; }
 ;
 
 like_predicate
     : scalar_exp LIKE atom
       { $$ = [$1, $3]; }
+    ;
+
+test_for_null
+    : column_ref IS NOT NULLX
+      { $$ = ['NOT', $1[1]]}
+    | column_ref IS NULLX
+      { $$ = [$1[1]]}
     ;
 
 opt_order_by_clause
