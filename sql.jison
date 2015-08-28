@@ -18,6 +18,9 @@
 'AND'                  return 'AND'
 'OR'                   return 'OR'
 'NOT'                  return 'NOT'
+'INSERT'               return 'INSERT'
+'VALUES'               return 'VALUES'
+'NULL'                 return 'NULLX'
 '('                    return '('
 ')'                    return ')'
 '>='                   return 'COMPARISON'
@@ -59,6 +62,7 @@ sql
 
 manipulative_statement
     : select_statement
+    | insert_statement
     ;
 
 select_statement
@@ -148,6 +152,35 @@ opt_asc_desc
       { $$ = 'ASC'; }
     | ASC
     | DESC
+    ;
+
+insert_statement
+    : INSERT '(' column_commalist ')' values_or_query_spec
+    { $$ = {type: $1, keyList: $3, valueList: $5}; }
+    ;
+
+column_commalist
+    : column_ref
+      { $$ = [$1[1]]; }
+    | column_commalist ',' column_ref
+      { $1.push($3[1]); $$ = $1; }
+    ;
+
+values_or_query_spec
+    : VALUES '(' insert_atom_commalist ')'
+      { $$ = $3; }
+    ;
+
+insert_atom_commalist
+    : insert_atom
+      { $$ = [$1]; }
+    | insert_atom_commalist ',' insert_atom
+      { $1.push($3); $$ = $1; }
+    ;
+
+insert_atom
+    : atom
+    | NULLX
     ;
 
 scalar_exp
