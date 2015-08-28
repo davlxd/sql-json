@@ -7,7 +7,6 @@
 \s+                    /* skip whitespace */
 'SELECT'               return 'SELECT'
 '*'                    return '*'
-'FROM'                 return 'FROM'
 'WHERE'                return 'WHERE'
 'LIKE'                 return 'LIKE'
 'ORDER'                return 'ORDER'
