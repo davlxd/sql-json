@@ -1,6 +1,6 @@
 var readline = require('readline');
 var sqlparser = require('./sql').parser;
-var data = require('./data');
+var dml = require('./dml');
 
 
 var rl = readline.createInterface({
@@ -15,7 +15,7 @@ rl.on('line', function (l) {
   console.log(require('util').inspect(ast, false, null, true));
   console.log('\n');
 
-  data.dml(ast);
+  dml(ast);
   
   rl.prompt();
 });

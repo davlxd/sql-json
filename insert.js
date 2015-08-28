@@ -1,9 +1,10 @@
 var fs = require('fs');
+var data = require('./data');
 
 function write(obj) {
-  var data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
-  data.push(obj);
-  fs.writeFileSync('data.json', JSON.stringify(data, null, 2), 'utf8');
+  var dataObj = data.load();
+  dataObj.push(obj);
+  fs.writeFileSync('data.json', JSON.stringify(dataObj, null, 2), 'utf8');
 }
 
 

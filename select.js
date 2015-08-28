@@ -1,19 +1,21 @@
 var fs = require('fs');
 var where = require('./where');
+var data = require('./data');
 
 
 function print(selection, filter, sortFuncArr) {
-  var data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
+  var dataObj = data.load();
+
   if (filter !== null) {
-    data = data.filter(filter);
+    dataObj = dataObj.filter(filter);
   }
   if (sortFuncArr !== null) {
     sortFuncArr.forEach(function(sortFunc) {
-      data = data.sort(sortFunc);
+      dataObj = dataObj.sort(sortFunc);
     });
   }
 
-  console.log(data);
+  console.log(dataObj);
 }
 
 

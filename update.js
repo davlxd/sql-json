@@ -1,13 +1,14 @@
 var fs = require('fs');
 var where = require('./where');
+var data = require('./data');
 
 
 function update(ast) {
   var filter = ast.condition === null ? null : where.condition2Filter(ast.condition);
 
-  var data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
+  var dataObj = data.load();
 
-  data.forEach(function(people) {
+  dataObj.forEach(function(people) {
     if (filter != null && !filter(people))
       return ;
     ast.assignment.forEach(function(keyValue) {
@@ -15,7 +16,7 @@ function update(ast) {
     });
   });
 
-  fs.writeFileSync('data.json', JSON.stringify(data, null, 2), 'utf8');
+  fs.writeFileSync('data.json', JSON.stringify(dataObj, null, 2), 'utf8');
 }
 
 module.exports = update;

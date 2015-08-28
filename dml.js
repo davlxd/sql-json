@@ -14,4 +14,4 @@ function dml(ast) {
 }
 
 
-exports.dml = dml;
+module.exports = dml;
