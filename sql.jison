@@ -12,6 +12,8 @@
 'LIKE'                 return 'LIKE'
 'ORDER'                return 'ORDER'
 'BY'                   return 'BY'
+'ASC'                  return 'ASC'
+'DESC'                 return 'DESC'
 'WHERE'                return 'WHERE'
 'AND'                  return 'AND'
 'OR'                   return 'OR'
@@ -28,6 +30,7 @@
 [0-9]+(\.[0-9]+)?      return 'NUM'
 \'[^'\n]*\'            return 'STRING'
 \"[^'\n]*\"            return 'STRING'
+','                    return ','
 ';'                    return ';'
 <<EOF>>                return 'EOF'
 
@@ -68,8 +71,8 @@ selection
     ;
 
 table_exp
-    : opt_where_clause
-      { $$ = { where: $1}; }
+    : opt_where_clause opt_order_by_clause
+      { $$ = { where: $1, orderBy: $2}; }
     ;
 
 opt_where_clause
@@ -119,6 +122,32 @@ between_predicate
 like_predicate
     : scalar_exp LIKE atom
       { $$ = [$1, $3]; }
+    ;
+
+opt_order_by_clause
+    :
+      { $$ = null; }
+    | ORDER BY ordering_spec_commalist
+      { $$ = $3; }
+    ;
+
+ordering_spec_commalist:
+    ordering_spec
+      { $$ = [$1]; }
+    |	ordering_spec_commalist ',' ordering_spec
+      { $1.push($3); $$ = $1; }
+    ;
+
+ordering_spec
+    : column_ref opt_asc_desc
+      { $$ = [$1[1], $2]}
+    ;
+
+opt_asc_desc
+    :
+      { $$ = 'ASC'; }
+    | ASC
+    | DESC
     ;
 
 scalar_exp
