@@ -20,6 +20,8 @@
 'NOT'                  return 'NOT'
 'INSERT'               return 'INSERT'
 'VALUES'               return 'VALUES'
+'UPDATE'               return 'UPDATE'
+'SET'                  return 'SET'
 'NULL'                 return 'NULLX'
 '('                    return '('
 ')'                    return ')'
@@ -27,7 +29,8 @@
 '<='                   return 'COMPARISON'
 '>'                    return 'COMPARISON'
 '<'                    return 'COMPARISON'
-'='                    return 'COMPARISON'
+'=='                   return 'COMPARISON'
+'='                    return '='
 (true|false)\b         return 'BOOLEAN'
 [a-zA-Z_][a-zA-Z0-9_]* return 'NAME'
 [0-9]+(\.[0-9]+)?      return 'NUM'
@@ -63,6 +66,7 @@ sql
 manipulative_statement
     : select_statement
     | insert_statement
+    | update_statement_searched
     ;
 
 select_statement
@@ -181,7 +185,28 @@ insert_atom_commalist
 insert_atom
     : atom
     | NULLX
+      { $$ = null; }
     ;
+
+update_statement_searched
+    : UPDATE SET assignment_commalist opt_where_clause
+      { $$ = {type: $1, assignment: $3, condition: $4}; }
+    ;
+
+assignment_commalist
+    : assignment
+      { $$ = [$1]; }
+    | assignment_commalist ',' assignment
+      { $1.push($3); $$ = $1; }
+    ;
+
+assignment
+    : column_ref '=' atom
+      { $$ = [$1[1], $3]; }
+    | column_ref '=' NULLX
+      { $$ = [$1[1], null]; }
+    ;
+
 
 scalar_exp
     : column_ref
