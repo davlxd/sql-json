@@ -18,7 +18,12 @@
 'NOT'                  return 'NOT'
 '('                    return '('
 ')'                    return ')'
-'LIKE'                 return 'LIKE'
+'>='                   return 'COMPARISON'
+'<='                   return 'COMPARISON'
+'>'                    return 'COMPARISON'
+'<'                    return 'COMPARISON'
+'='                    return 'COMPARISON'
+(true|false)\b         return 'BOOLEAN'
 [a-zA-Z_][a-zA-Z0-9_]* return 'NAME'
 [0-9]+(\.[0-9]+)?      return 'NUM'
 \'[^'\n]*\'            return 'STRING'
@@ -80,20 +85,36 @@ where_clause
 
 search_condition
     : search_condition OR search_condition
-      { $$ = { type: 'or', condition: $1, condition_another: $3}; }
+      { $$ = { type: 'OR', condition: $1, condition_another: $3}; }
     | search_condition AND search_condition
-      { $$ = { type: 'and', condition: $1, condition_another: $3}; }
+      { $$ = { type: 'AND', condition: $1, condition_another: $3}; }
     | NOT search_condition
-      { $$ = { type: 'not', condition: $2}; }
+      { $$ = { type: 'NOT', condition: $2}; }
     | '(' search_condition ')'
       { $$ = $2; }
     | predicate
     ;
 
 predicate
-    : like_predicate
-      { $$ = { type: 'like', predicate: $1}; }
+    : comparison_predicate
+      { $$ = { type: 'COMPARISON', predicate: $1}; }
+    | between_predicate
+      { $$ = { type: 'BETWEEN', predicate: $1}; }
+    | like_predicate
+      { $$ = { type: 'LIKE', predicate: $1}; }
     ;
+
+comparison_predicate
+    : scalar_exp COMPARISON scalar_exp
+      { $$ = [$2, $1, $3]; }
+    ;
+
+between_predicate
+    : scalar_exp NOT BETWEEN scalar_exp AND scalar_exp
+      { $$ = [$1, $4, $6]; }
+    | scalar_exp BETWEEN scalar_exp AND scalar_exp
+      { $$ = ['not', $1, $3, $5]; }
+;
 
 like_predicate
     : scalar_exp LIKE atom
@@ -102,10 +123,12 @@ like_predicate
 
 scalar_exp
     : column_ref
+    | atom
     ;
 
 column_ref
     : NAME
+      { $$ = ['COLUMN', $1]; }
     ;
 
 atom
@@ -116,5 +139,8 @@ literal
     : STRING
       { $$ = $1.replace(/^\'|\'$/g, '').replace(/^\"|\"$/g, ''); }
     | NUM
+      { $$ = parseFloat($1); }
+    | BOOLEAN
+      { $$ = $1.toUpperCase() === 'TRUE' ? true : false; }
     ;
 
