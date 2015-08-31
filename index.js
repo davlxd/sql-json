@@ -34,6 +34,11 @@ var rl = readline.createInterface({
 
 
 rl.on('line', function (l) {
+  if (l.trim().length === 0) {
+    rl.prompt();
+    return ;
+  }
+
   var ast = sqlparser.parse(l);
 
   console.log('AST:');
