@@ -36,7 +36,7 @@ function likeCond(cond) {
     var extractedScalar = cond.predicate.map(function(scalar) {
       return scalar[0] === 'COLUMN' ? people[scalar[1]] : scalar ;
     });
-    return extractedScalar[0].match(new RegExp(extractedScalar[1]));
+    return extractedScalar[0].match(new RegExp(extractedScalar[1], 'i'));
   };
 }
 
