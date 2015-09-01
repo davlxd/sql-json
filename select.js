@@ -1,6 +1,7 @@
 var fs = require('fs');
 var where = require('./where');
 var data = require('./data');
+var output = require('./output');
 
 
 function print(selection, filter, sortFuncArr) {
@@ -15,7 +16,7 @@ function print(selection, filter, sortFuncArr) {
     });
   }
 
-  console.log(dataObj);
+  output.print(dataObj);
 }
 
 
