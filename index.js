@@ -39,7 +39,13 @@ rl.on('line', function (l) {
     return ;
   }
 
-  var ast = sqlparser.parse(l);
+  try {
+    var ast = sqlparser.parse(l);
+  } catch (error) {
+    console.log(error);
+    rl.prompt();
+    return ;
+  }
 
   console.log('AST:');
   console.log(require('util').inspect(ast, false, null, true));
