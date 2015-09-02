@@ -21,6 +21,8 @@ function comparisonCond(cond) {
     if (extractedScalar[0] === '<=')
       return extractedScalar[1] <= extractedScalar[2];
     if (extractedScalar[0] === '>')
+      return extractedScalar[1] > extractedScalar[2];
+    if (extractedScalar[0] === '<')
       return extractedScalar[1] < extractedScalar[2];
     if (extractedScalar[0] === '==')
       return extractedScalar[1] === extractedScalar[2];
